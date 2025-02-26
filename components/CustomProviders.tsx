@@ -1,25 +1,41 @@
 "use client";
 
 import { ChainProvider } from "@cosmos-kit/react";
-import { assets } from "chain-registry";
+import {
+  assets as mainnetAssets,
+  chains as mainnetChains,
+} from "chain-registry";
+import {
+  assets as testnetAssets,
+  chains as testnetChains,
+} from "chain-registry/testnet";
 import { wallets } from "@cosmos-kit/keplr";
-import { ThemeProvider, useTheme } from "@interchain-ui/react";
+import { SUPPORTED_CHAINS_NAMES } from "@/lib/constants";
+
 import "@interchain-ui/react/styles";
-import { SUPPORTED_CHAINS } from "@/config/constants";
 
 type CustomProvidersProps = {
   children: React.ReactNode;
 };
 
 export default function CustomProviders({ children }: CustomProvidersProps) {
-  const { theme, themeClass, setTheme } = useTheme();
-  console.log(theme);
-  console.log(setTheme);
+  // Combine mainnet and testnet assets
+  const allAssets = [...mainnetAssets, ...testnetAssets];
+
+  // Find the chain configurations for the supported chains
+  const supportedChainConfigs = [
+    ...mainnetChains.filter((chain) =>
+      SUPPORTED_CHAINS_NAMES.includes(chain.chain_name)
+    ),
+    ...testnetChains.filter((chain) =>
+      SUPPORTED_CHAINS_NAMES.includes(chain.chain_name)
+    ),
+  ];
 
   return (
     <ChainProvider
-      chains={SUPPORTED_CHAINS}
-      assetLists={assets}
+      chains={supportedChainConfigs}
+      assetLists={allAssets}
       wallets={wallets}
       walletConnectOptions={{
         signClient: {
@@ -34,9 +50,7 @@ export default function CustomProviders({ children }: CustomProvidersProps) {
         },
       }}
     >
-      <ThemeProvider>
-        <div className={themeClass}>{children}</div>
-      </ThemeProvider>
+      {children}
     </ChainProvider>
   );
 }

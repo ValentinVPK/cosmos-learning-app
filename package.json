@@ -9,17 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cosmos-kit/keplr": "^2.14.7",
+    "@cosmos-kit/react": "^2.21.7",
+    "@interchain-ui/react": "^1.26.2",
+    "chain-registry": "^1.69.135",
+    "next": "15.1.7",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.1.7"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
-    "@eslint/eslintrc": "^3"
+    "typescript": "^5"
   }
 }

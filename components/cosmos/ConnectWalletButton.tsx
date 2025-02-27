@@ -1,31 +1,22 @@
 "use client";
 
-import { useChain, useManager } from "@cosmos-kit/react";
+import { useChain } from "@cosmos-kit/react";
 import { Button } from "../ui/button";
-import { useEffect } from "react";
+import { WalletStatus } from "@cosmos-kit/core";
+type ConnectWalletButtonProps = {
+  chainName: string;
+};
 
-export default function ConnectWalletButton() {
-  const { chain, wallet, openView } = useChain("osmosistestnet");
-  const manager = useManager();
-
-  useEffect(() => {
-    // Log debugging information
-    console.log("Chain:", chain);
-    console.log("Wallet:", wallet);
-    console.log("Manager:", manager);
-  }, [chain, wallet, manager]);
+export default function ConnectWalletButton({
+  chainName,
+}: ConnectWalletButtonProps) {
+  const { status, openView } = useChain(chainName);
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold">Chain Connection Status</h2>
-        <p>Chain: {chain ? JSON.stringify(chain.chain_name) : "undefined"}</p>
-        <p>Wallet: {wallet ? wallet.prettyName : "undefined"}</p>
-      </div>
-
-      <Button size="lg" onClick={openView}>
-        Connect Keplr Wallet
-      </Button>
-    </div>
+    <Button size="lg" onClick={openView}>
+      {status === WalletStatus.Connected
+        ? "View Wallet"
+        : "Connect Keplr Wallet"}
+    </Button>
   );
 }

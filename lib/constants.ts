@@ -11,3 +11,22 @@ export const SUPPORTED_CHAINS_NAMES = [
   "nobletestnet",
   "osmosistestnet",
 ];
+
+export const SUPPORTED_CHAINS_DROPDOWN_ITEMS = [
+  {
+    value: "mantrachaintestnet2",
+    label: "Mantra Testnet",
+  },
+  {
+    value: "celestia",
+    label: "Celestia Mainnet",
+  },
+  {
+    value: "nobletestnet",
+    label: "Noble Testnet",
+  },
+  {
+    value: "osmosistestnet",
+    label: "Osmosis Testnet",
+  },
+];

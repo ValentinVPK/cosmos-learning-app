@@ -7,10 +7,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Balance } from "@/lib/types";
+import { formatTokenAmount } from "@/lib/utils";
 import { AssetList } from "@chain-registry/types";
 import { useChain } from "@cosmos-kit/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Spinner from "../ui/spinner";
 
 type WalletBalancesTableProps = {
   chainName: string;
@@ -22,29 +24,36 @@ export default function WalletBalancesTable({
   assets,
 }: WalletBalancesTableProps) {
   const [balances, setBalances] = useState<Balance>({});
+  const [isBalancesLoading, setIsBalancesLoading] = useState(false);
+  const [isBalancesError, setIsBalancesError] = useState(false);
   const { getCosmWasmClient, address } = useChain(chainName);
 
   useEffect(() => {
     const getBalances = async () => {
-      const client = await getCosmWasmClient();
+      try {
+        setIsBalancesLoading(true);
+        const client = await getCosmWasmClient();
 
-      const currentBalance: Balance = {};
+        const currentBalance: Balance = {};
 
-      for (const asset of assets?.assets || []) {
-        const balance = await client.getBalance(address || "", asset.base);
-        currentBalance[asset.base] = balance;
+        for (const asset of assets?.assets || []) {
+          const balance = await client.getBalance(address || "", asset.base);
+          currentBalance[asset.base] = balance;
+        }
+
+        setBalances(currentBalance);
+        setIsBalancesLoading(false);
+      } catch (error: unknown) {
+        console.error("Error fetching balances", error);
+        setIsBalancesError(true);
+        setIsBalancesLoading(false);
       }
-
-      setBalances(currentBalance);
     };
-
-    console.log("balances", balances);
 
     if (address) {
       getBalances();
     }
-  }, [address, getCosmWasmClient]);
-  // console.log("assets", assets);
+  }, [address, getCosmWasmClient, assets]);
 
   if (!assets) {
     return (
@@ -83,7 +92,26 @@ export default function WalletBalancesTable({
               </TableCell>
               <TableCell>{asset.symbol}</TableCell>
               <TableCell>{asset.base}</TableCell>
-              <TableCell className="text-right"></TableCell>
+              <TableCell className="text-right">
+                {isBalancesLoading ? (
+                  <div className="flex justify-end">
+                    <Spinner />
+                  </div>
+                ) : balances[asset.base] ? (
+                  <>
+                    {formatTokenAmount(balances[asset.base])?.whole}
+                    {formatTokenAmount(balances[asset.base])?.decimal && (
+                      <span className="text-gray-500">
+                        .{formatTokenAmount(balances[asset.base])?.decimal}
+                      </span>
+                    )}
+                  </>
+                ) : isBalancesError ? (
+                  <div className="flex justify-end">
+                    <p className="text-red-500">Error fetching balance</p>
+                  </div>
+                ) : null}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

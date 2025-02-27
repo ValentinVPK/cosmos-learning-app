@@ -55,7 +55,7 @@ export function Combobox({ chains, value, setValue }: ComboboxProps) {
                   key={chain.value}
                   value={chain.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    setValue(currentValue);
                     setOpen(false);
                   }}
                 >

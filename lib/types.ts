@@ -6,3 +6,16 @@ export type ChainDropdownItems = {
 };
 
 export type Balance = Record<string, Coin>;
+
+export type TransferFormData = {
+  amount: number;
+  recipientAddress: string;
+};
+
+export type ActionResponse = {
+  success: boolean;
+  message: string;
+  errors?: {
+    [K in keyof TransferFormData]?: string[];
+  };
+};

@@ -15,6 +15,11 @@ export default function MainHeader() {
               Connect
             </Link>
           </li>
+          <li>
+            <Link href="/transfer" className="text-2xl text-amber-50">
+              Transfer Tokens
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>

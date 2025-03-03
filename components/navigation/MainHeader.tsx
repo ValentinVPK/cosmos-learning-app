@@ -20,6 +20,11 @@ export default function MainHeader() {
               Transfer Tokens
             </Link>
           </li>
+          <li>
+            <Link href="/transactions" className="text-2xl text-amber-50">
+              Transactions
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>

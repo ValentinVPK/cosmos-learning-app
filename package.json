@@ -13,6 +13,7 @@
     "@cosmos-kit/keplr": "^2.14.7",
     "@cosmos-kit/react": "^2.21.7",
     "@interchain-ui/react": "^1.26.2",
+    "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-popover": "^1.1.6",

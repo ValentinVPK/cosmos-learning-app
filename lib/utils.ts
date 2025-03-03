@@ -5,7 +5,7 @@ import { SUPPORTED_CHAINS_NAMES } from "./constants";
 import { Coin } from "@cosmjs/amino";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { SigningStargateClient } from "@cosmjs/stargate";
-
+import { Event } from "./types";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -121,3 +121,41 @@ export async function sendTokensWithMsg(
 
   return result;
 }
+
+// Helper function to extract sender from events
+export const extractSenderFromEvents = (
+  events: Event[]
+): string | undefined => {
+  for (const event of events) {
+    if (event.type === "message" || event.type === "tx") {
+      for (const attr of event.attributes) {
+        if (attr.key === "sender") {
+          return attr.value;
+        }
+      }
+    }
+  }
+  return undefined;
+};
+
+// Helper function to extract fee from events
+export const extractFeeFromEvents = (
+  events: Event[]
+): { amount: string; denom: string } | undefined => {
+  for (const event of events) {
+    if (event.type === "fee_pay") {
+      for (const attr of event.attributes) {
+        if (attr.key === "fee") {
+          const feeMatch = attr.value.match(/(\d+)([a-zA-Z]+)/);
+          if (feeMatch) {
+            return {
+              amount: feeMatch[1],
+              denom: feeMatch[2],
+            };
+          }
+        }
+      }
+    }
+  }
+  return undefined;
+};

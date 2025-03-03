@@ -20,3 +20,25 @@ export type ActionResponse = {
     [K in keyof TransferFormData]?: string[];
   };
 };
+
+export type EventAttribute = {
+  key: string;
+  value: string;
+};
+
+export type Event = {
+  type: string;
+  attributes: EventAttribute[];
+};
+
+export type TransactionDetails = {
+  hash: string;
+  height: number;
+  timestamp?: string;
+  fee?: {
+    amount: string;
+    denom: string;
+  };
+  sender?: string;
+  success: boolean;
+};

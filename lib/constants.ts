@@ -30,3 +30,12 @@ export const SUPPORTED_CHAINS_DROPDOWN_ITEMS = [
     label: "Osmosis Testnet",
   },
 ];
+
+export const CHAIN_MINTSCAN_URLS: { [key: string]: string } = {
+  mantrachaintestnet2: "mantra-testnet",
+  celestia: "celestia",
+  nobletestnet: "noble-testnet",
+  osmosistestnet: "osmosis-testnet",
+};
+
+export const MINTSCAN_URL = "https://www.mintscan.io/";

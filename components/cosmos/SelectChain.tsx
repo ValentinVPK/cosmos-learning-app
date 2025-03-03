@@ -9,12 +9,16 @@ import WalletBalancesTable from "./WalletBalancesTable";
 import { getAssetsByChain } from "@/lib/utils";
 import { WalletStatus } from "@cosmos-kit/core";
 import { useSelectedChain } from "@/lib/context";
+import { useMemo } from "react";
 
 export default function SelectChain() {
   const { selectedChain } = useSelectedChain();
   const { chain, status, address } = useChain(selectedChain);
 
-  const assets = getAssetsByChain(selectedChain);
+  const assets = useMemo(
+    () => getAssetsByChain(selectedChain),
+    [selectedChain]
+  );
 
   return (
     <>

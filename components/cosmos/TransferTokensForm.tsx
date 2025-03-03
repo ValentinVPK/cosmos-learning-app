@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useMemo } from "react";
 import { transferTokens } from "@/actions/transfer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ import Link from "next/link";
 import { getAssetsByChain, sendTokensWithMsg } from "@/lib/utils";
 import Image from "next/image";
 import { SigningStargateClient } from "@cosmjs/stargate";
+import { CHAIN_MINTSCAN_URLS, MINTSCAN_URL } from "@/lib/constants";
 
 // type TransferMethod = "stargate" | "cosmwasm" | "msg";
 
@@ -51,13 +52,19 @@ export default function TransferTokensForm() {
     null
   );
 
-  const assets = getAssetsByChain(selectedChain);
+  const assets = useMemo(
+    () => getAssetsByChain(selectedChain),
+    [selectedChain]
+  );
+
   const nativeTokenDenom = assets?.assets[0].base;
   const nativeTokenSymbol = assets?.assets[0].symbol;
   const nativeTokenLogo =
     assets?.assets[0].logo_URIs?.svg ||
     assets?.assets[0].logo_URIs?.png ||
     "/token-fallback.svg";
+
+  const mintscanChainUrl = CHAIN_MINTSCAN_URLS[selectedChain];
 
   // Handle the actual token transfer when the server action returns success
   useEffect(() => {
@@ -98,7 +105,7 @@ export default function TransferTokensForm() {
 
           setTransferResult({
             success: true,
-            message: `Transfer successful! Transaction hash: ${result.transactionHash}`,
+            message: result.transactionHash,
           });
         } catch (error) {
           console.error("Error performing transfer:", error);
@@ -191,7 +198,24 @@ export default function TransferTokensForm() {
               ) : (
                 <AlertTriangle className="h-4 w-4" />
               )}
-              <AlertDescription>{transferResult.message}</AlertDescription>
+              <AlertDescription>
+                <div className="flex items-center space-x-2">
+                  {transferResult.success ? (
+                    <>
+                      <span>Transfer successful! Transaction hash:</span>
+                      <a
+                        href={`${MINTSCAN_URL}/${mintscanChainUrl}/tx/${transferResult.message}`}
+                        target="_blank"
+                        className="truncate max-w-[200px]"
+                      >
+                        {transferResult.message}
+                      </a>
+                    </>
+                  ) : (
+                    transferResult.message
+                  )}
+                </div>
+              </AlertDescription>
             </Alert>
           )}
 

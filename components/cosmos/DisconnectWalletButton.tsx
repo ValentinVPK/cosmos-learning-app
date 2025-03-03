@@ -3,15 +3,11 @@
 import { useChain } from "@cosmos-kit/react";
 import { Button } from "../ui/button";
 import { WalletStatus } from "@cosmos-kit/core";
+import { useSelectedChain } from "@/lib/context";
 
-type DisconnectWalletButtonProps = {
-  chainName: string;
-};
-
-export default function DisconnectWalletButton({
-  chainName,
-}: DisconnectWalletButtonProps) {
-  const { status, disconnect } = useChain(chainName);
+export default function DisconnectWalletButton() {
+  const { selectedChain } = useSelectedChain();
+  const { status, disconnect } = useChain(selectedChain);
 
   const handleDisconnect = () => {
     disconnect();

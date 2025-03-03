@@ -3,14 +3,11 @@
 import { useChain } from "@cosmos-kit/react";
 import { Button } from "../ui/button";
 import { WalletStatus } from "@cosmos-kit/core";
-type ConnectWalletButtonProps = {
-  chainName: string;
-};
+import { useSelectedChain } from "@/lib/context";
 
-export default function ConnectWalletButton({
-  chainName,
-}: ConnectWalletButtonProps) {
-  const { status, openView } = useChain(chainName);
+export default function ConnectWalletButton() {
+  const { selectedChain } = useSelectedChain();
+  const { status, openView } = useChain(selectedChain);
 
   return (
     <Button size="lg" onClick={openView}>

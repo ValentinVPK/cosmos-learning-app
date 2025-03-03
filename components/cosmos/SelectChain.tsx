@@ -2,31 +2,30 @@
 
 import SelectChainDropdown from "./SelectChainDropdown";
 import ConnectWalletButton from "./ConnectWalletButton";
-import { useState } from "react";
-import { SUPPORTED_CHAINS_NAMES } from "@/lib/constants";
 import { useChain } from "@cosmos-kit/react";
 import ChainInformation from "./ChainInformation";
 import DisconnectWalletButton from "./DisconnectWalletButton";
 import WalletBalancesTable from "./WalletBalancesTable";
-import { getAssets } from "@/lib/utils";
+import { getAssetsByChain } from "@/lib/utils";
 import { WalletStatus } from "@cosmos-kit/core";
-export default function SelectChain() {
-  const [value, setValue] = useState(SUPPORTED_CHAINS_NAMES[0]);
-  const { chain, status, address } = useChain(value);
+import { useSelectedChain } from "@/lib/context";
 
-  const assets = getAssets();
-  const assetsByChain = assets.find((asset) => asset.chain_name === value);
+export default function SelectChain() {
+  const { selectedChain } = useSelectedChain();
+  const { chain, status, address } = useChain(selectedChain);
+
+  const assets = getAssetsByChain(selectedChain);
 
   return (
     <>
-      <SelectChainDropdown value={value} setValue={setValue} />
+      <SelectChainDropdown />
       <div className="flex justify-between gap-3">
-        <ConnectWalletButton chainName={value} />
-        <DisconnectWalletButton chainName={value} />
+        <ConnectWalletButton />
+        <DisconnectWalletButton />
       </div>
       <ChainInformation chain={chain} status={status} address={address} />
       {status === WalletStatus.Connected && (
-        <WalletBalancesTable assets={assetsByChain} chainName={value} />
+        <WalletBalancesTable assets={assets} />
       )}
     </>
   );

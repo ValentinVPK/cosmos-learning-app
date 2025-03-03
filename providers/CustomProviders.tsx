@@ -11,7 +11,7 @@ import {
 } from "chain-registry/testnet";
 import { wallets } from "@cosmos-kit/keplr";
 import { SUPPORTED_CHAINS_NAMES } from "@/lib/constants";
-
+import { SelectedChainProvider } from "./ChainProvider";
 import "@interchain-ui/react/styles";
 
 type CustomProvidersProps = {
@@ -33,24 +33,26 @@ export default function CustomProviders({ children }: CustomProvidersProps) {
   ];
 
   return (
-    <ChainProvider
-      chains={supportedChainConfigs}
-      assetLists={allAssets}
-      wallets={wallets}
-      walletConnectOptions={{
-        signClient: {
-          projectId: "a8510432ebb71e6948cfd6cde54b70f7",
-          relayUrl: "wss://relay.walletconnect.org",
-          metadata: {
-            name: "Cosmos Kit dApp",
-            description: "Cosmos Kit dApp built by Create Cosmos App",
-            url: "https://docs.hyperweb.io/cosmos-kit/",
-            icons: [],
+    <SelectedChainProvider>
+      <ChainProvider
+        chains={supportedChainConfigs}
+        assetLists={allAssets}
+        wallets={wallets}
+        walletConnectOptions={{
+          signClient: {
+            projectId: "a8510432ebb71e6948cfd6cde54b70f7",
+            relayUrl: "wss://relay.walletconnect.org",
+            metadata: {
+              name: "Cosmos Kit dApp",
+              description: "Cosmos Kit dApp built by Create Cosmos App",
+              url: "https://docs.hyperweb.io/cosmos-kit/",
+              icons: [],
+            },
           },
-        },
-      }}
-    >
-      {children}
-    </ChainProvider>
+        }}
+      >
+        {children}
+      </ChainProvider>
+    </SelectedChainProvider>
   );
 }

@@ -34,15 +34,17 @@ export async function transferTokens(
       };
     }
 
-    // const { amount, recipientAddress } = validatedData.data;
-    console.log("Tokens transfared:", validatedData.data);
+    // Note: The actual token transfer will be handled on the client side
+    // using the signerClient from CosmosKit
+    const { amount, recipientAddress } = validatedData.data;
 
     return {
       success: true,
-      message: "Address saved successfully!",
+      message: "Transfer request validated successfully!",
+      data: { amount, recipientAddress },
     };
   } catch (error) {
-    console.error("Error transfaring tokens:", error);
+    console.error("Error processing transfer request:", error);
     return {
       success: false,
       message: "An unexpected error occurred",

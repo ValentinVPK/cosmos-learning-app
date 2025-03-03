@@ -13,20 +13,21 @@ import { useChain } from "@cosmos-kit/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Spinner from "../ui/spinner";
+import { useSelectedChain } from "@/lib/context";
 
 type WalletBalancesTableProps = {
-  chainName: string;
   assets?: AssetList;
 };
 
 export default function WalletBalancesTable({
-  chainName,
   assets,
 }: WalletBalancesTableProps) {
   const [balances, setBalances] = useState<Balance>({});
   const [isBalancesLoading, setIsBalancesLoading] = useState(false);
   const [isBalancesError, setIsBalancesError] = useState(false);
-  const { getCosmWasmClient, address } = useChain(chainName);
+
+  const { selectedChain } = useSelectedChain();
+  const { getCosmWasmClient, address } = useChain(selectedChain);
 
   useEffect(() => {
     const getBalances = async () => {

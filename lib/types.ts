@@ -15,6 +15,7 @@ export type TransferFormData = {
 export type ActionResponse = {
   success: boolean;
   message: string;
+  data?: TransferFormData;
   errors?: {
     [K in keyof TransferFormData]?: string[];
   };

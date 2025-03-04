@@ -116,7 +116,10 @@ export default function NextJSConceptsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {concepts.map((concept, index) => (
-            <Card key={index} className="h-full">
+            <Card
+              key={index}
+              className="h-full border-2 border-transparent transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:shadow-xl hover:-translate-y-2"
+            >
               <CardHeader>
                 <CardTitle>{concept.title}</CardTitle>
                 <CardDescription>{concept.description}</CardDescription>

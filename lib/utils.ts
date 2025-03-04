@@ -6,6 +6,7 @@ import { Coin } from "@cosmjs/amino";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Event } from "./types";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -122,7 +123,6 @@ export async function sendTokensWithMsg(
   return result;
 }
 
-// Helper function to extract sender from events
 export const extractSenderFromEvents = (
   events: Event[]
 ): string | undefined => {
@@ -138,7 +138,6 @@ export const extractSenderFromEvents = (
   return undefined;
 };
 
-// Helper function to extract fee from events
 export const extractFeeFromEvents = (
   events: Event[]
 ): { amount: string; denom: string } | undefined => {
@@ -158,4 +157,12 @@ export const extractFeeFromEvents = (
     }
   }
   return undefined;
+};
+
+export const validateTransactionHash = (hash: string) => {
+  return /^[0-9a-fA-F]{64}$/.test(hash);
+};
+
+export const validateBlockNumber = (blockNumber: string) => {
+  return /^\d+$/.test(blockNumber) && parseInt(blockNumber) > 0;
 };

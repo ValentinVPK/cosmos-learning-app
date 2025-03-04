@@ -66,7 +66,6 @@ export default function TransferTokensForm() {
 
   const mintscanChainUrl = CHAIN_MINTSCAN_URLS[selectedChain];
 
-  // Handle the actual token transfer when the server action returns success
   useEffect(() => {
     const performTransfer = async () => {
       if (state?.success && state.data && !isTransferring) {

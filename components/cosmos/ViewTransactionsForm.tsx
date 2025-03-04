@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import { sha256 } from "@cosmjs/crypto";
 import { toHex } from "@cosmjs/encoding";
+import Link from "next/link";
+import { validateBlockNumber, validateTransactionHash } from "@/lib/utils";
 
 export function ViewTransactionsForm() {
   const { selectedChain } = useSelectedChain();
@@ -52,17 +54,14 @@ export function ViewTransactionsForm() {
         return;
       }
 
-      if (
-        searchType === "block" &&
-        (!/^\d+$/.test(searchValue) || parseInt(searchValue) <= 0)
-      ) {
+      if (searchType === "block" && !validateBlockNumber(searchValue)) {
         setError("Please enter a valid block number");
         return;
       }
 
       if (
         searchType === "transaction" &&
-        !/^[0-9a-fA-F]{64}$/.test(searchValue)
+        !validateTransactionHash(searchValue)
       ) {
         setError("Please enter a valid transaction hash");
         return;
@@ -89,7 +88,6 @@ export function ViewTransactionsForm() {
         router.push(`/transactions/${searchValue}`);
       } else if (searchType === "block") {
         const block = await client.getBlock(parseInt(searchValue));
-        console.log(block);
 
         const txHashesInBlock = block.txs.map((tx) => {
           const hash = sha256(tx);
@@ -175,14 +173,14 @@ export function ViewTransactionsForm() {
             {transactionHashes.map((hash, index) => (
               <div
                 key={index}
-                className="p-2 bg-gray-100 rounded text-xs font-mono break-all hover:bg-gray-200 transition-colors"
+                className="p-3 bg-gray-100 rounded text-xs font-mono break-all hover:bg-gray-200 transition-colors"
               >
-                <a
+                <Link
                   href={`/transactions/${hash}`}
-                  className="block text-blue-600 hover:underline"
+                  className="block hover:underline"
                 >
                   {hash}
-                </a>
+                </Link>
               </div>
             ))}
           </div>

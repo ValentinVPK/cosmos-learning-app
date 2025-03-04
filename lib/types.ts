@@ -41,4 +41,9 @@ export type TransactionDetails = {
   };
   sender?: string;
   success: boolean;
+  events: Event[];
+  gasInfo: {
+    gasUsed: string;
+    gasWanted: string;
+  } | null;
 };

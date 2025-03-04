@@ -13,13 +13,12 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, ExternalLink } from "lucide-react";
+import { CheckCircle2, ExternalLink, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { CHAIN_MINTSCAN_URLS, MINTSCAN_URL } from "@/lib/constants";
-import { notFound } from "next/navigation";
 import { extractSenderFromEvents, extractFeeFromEvents } from "@/lib/utils";
+import Spinner from "../ui/spinner";
 
 interface TransactionDetailsProps {
   hash: string;
@@ -30,21 +29,19 @@ export default function TransactionDetails({ hash }: TransactionDetailsProps) {
   const { getSigningStargateClient, wallet } = useChain(selectedChain);
   const [txDetails, setTxDetails] = useState<TxDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [gasInfo, setGasInfo] = useState<{
-    used: number;
-    wanted: number;
-  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const mintscanChainUrl = CHAIN_MINTSCAN_URLS[selectedChain];
 
   useEffect(() => {
     const fetchTransactionDetails = async () => {
       setLoading(true);
+      setError(null);
 
       try {
         if (!wallet) {
-          throw new Error("Wallet not found");
+          setError("No wallet found");
+          return;
         }
 
         const client = await getSigningStargateClient();
@@ -54,23 +51,16 @@ export default function TransactionDetails({ hash }: TransactionDetailsProps) {
         }
 
         const txResult = await client.getTx(hash);
-        console.log("Transaction result:", txResult);
+
+        console.log("txResult", txResult);
 
         if (!txResult) {
-          notFound();
+          setError("Transaction not found");
+          return;
         }
-
-        console.log("Transaction result:", txResult);
 
         // Extract events
         const txEvents = txResult.events || [];
-        setEvents(txEvents as Event[]);
-
-        // Extract gas info
-        setGasInfo({
-          used: Number(txResult.gasUsed),
-          wanted: Number(txResult.gasWanted),
-        });
 
         // Process transaction data
         const details: TxDetails = {
@@ -79,6 +69,11 @@ export default function TransactionDetails({ hash }: TransactionDetailsProps) {
           fee: extractFeeFromEvents(txEvents as Event[]),
           sender: extractSenderFromEvents(txEvents as Event[]),
           success: true,
+          events: txEvents as Event[],
+          gasInfo: {
+            gasUsed: txResult.gasUsed.toString(),
+            gasWanted: txResult.gasWanted.toString(),
+          },
         };
 
         // If we have the height, fetch the block to get the timestamp
@@ -95,9 +90,8 @@ export default function TransactionDetails({ hash }: TransactionDetailsProps) {
 
         setTxDetails(details);
       } catch (error) {
-        // Let the error propagate to Next.js error boundary
         console.error("Error fetching transaction details:", error);
-        throw error;
+        setError("Failed to fetch transaction details");
       } finally {
         setLoading(false);
       }
@@ -107,24 +101,36 @@ export default function TransactionDetails({ hash }: TransactionDetailsProps) {
   }, [hash, getSigningStargateClient, wallet]);
 
   if (loading) {
+    return <Spinner className="w-10 h-10" />;
+  }
+
+  if (error) {
     return (
-      <Card>
+      <Card className="w-full">
         <CardHeader>
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-4 w-1/2 mt-2" />
+          <CardTitle>Transaction Details</CardTitle>
+          <CardDescription>
+            Information about transaction {hash.slice(0, 10)}...
+            {hash.slice(-10)}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
+        <CardContent>
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         </CardContent>
+        <CardFooter>
+          <Button variant="outline" onClick={() => window.history.back()}>
+            Go Back
+          </Button>
+        </CardFooter>
       </Card>
     );
   }
 
   if (!txDetails) {
-    notFound();
+    return <Spinner className="w-10 h-10" />;
   }
 
   return (
@@ -185,13 +191,13 @@ export default function TransactionDetails({ hash }: TransactionDetailsProps) {
             </div>
           )}
 
-          {gasInfo && (
+          {txDetails.gasInfo && (
             <div className="space-y-1">
               <h3 className="text-sm font-medium text-muted-foreground">
                 Gas (Used/Wanted)
               </h3>
               <p className="text-sm">
-                {gasInfo.used} / {gasInfo.wanted}
+                {txDetails.gasInfo.gasUsed} / {txDetails.gasInfo.gasWanted}
               </p>
             </div>
           )}
@@ -215,16 +221,16 @@ export default function TransactionDetails({ hash }: TransactionDetailsProps) {
           )}
         </div>
 
-        {events.length > 0 && (
+        {txDetails.events.length > 0 && (
           <div className="space-y-2">
             <h3 className="text-sm font-medium">Events</h3>
             <div className="border rounded-md p-4 bg-muted/50">
               <details>
                 <summary className="cursor-pointer font-medium text-sm">
-                  View Events ({events.length})
+                  View Events ({txDetails.events.length})
                 </summary>
                 <div className="mt-2 space-y-4">
-                  {events.map((event, index) => (
+                  {txDetails.events.map((event, index) => (
                     <div key={index} className="border-t pt-2">
                       <h4 className="text-sm font-medium">{event.type}</h4>
                       <div className="grid grid-cols-2 gap-1 mt-1">
